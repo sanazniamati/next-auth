@@ -1,0 +1,19 @@
+/** @format */
+
+.appBg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background: url(../../../../public/assets/images/login2.jpg);
+  background-size: cover;
+}
+.card {
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.loginForm {
+  backdrop-filter: blur(3px);
+  border-radius: 16px;
+}

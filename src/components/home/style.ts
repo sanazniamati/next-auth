@@ -5,9 +5,9 @@
 import styled from "styled-components";
 export const Main = styled.div`
   width: 100%;
-  height: 900px;
+  height: 100vh;
   background-image: url("assets/images/header.jpg");
-  background-repeat: no-repeat;
+  background-size: cover;
   position: relative;
   .headerText {
     position: absolute;
