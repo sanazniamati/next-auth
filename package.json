@@ -10,13 +10,16 @@
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.0",
+    "@hookform/resolvers": "^3.6.0",
+    "@radix-ui/react-icons": "^1.3.0",
     "antd": "^5.18.3",
     "axios": "^1.7.2",
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.52.0",
-    "styled-components": "^6.1.11"
+    "styled-components": "^6.1.11",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",

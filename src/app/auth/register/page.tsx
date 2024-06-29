@@ -1,64 +1,76 @@
 /** @format */
 "use client";
 
-import React from "react";
 import type { FormProps } from "antd";
-import { Button, Card, Checkbox, Form, Input, Typography } from "antd";
+import { Button, Card, Checkbox, Form, Input, Typography, FormInstance, FormRule } from "antd";
 import styleLogin from "./style.module.css";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import { useFormState } from "react-dom";
-import { register } from "../../../../actions/auth";
+import { FormError } from "@/components/form-error";
+import { FormSuccess } from "@/components/form-success";
+
+import { registerAction } from "../../../../actions/register";
+import { RegisterSchema, registerSchema } from "../../../schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 type FieldType = {
-  username?: string;
+  name?: string;
   email?: string;
   password?: string;
-  remember?: string;
 };
 
-export type State = {
-  status: string;
-  message: string;
-};
-
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log("Success:", values);
-};
-
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
+const onFinishFailed: FormProps<RegisterSchema>["onFinishFailed"] = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
 
 function Register() {
-  const [state, formAction] = useFormState<State, FormData>(register, {
-    status: "",
-    message: "",
-  });
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
+  // const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const methods = useForm();
-  const { handleSubmit } = methods;
-
-  const submit = async (formData: FieldType) => {
-    try {
-      // const response = await axios.post("https://api.mv-team.ir/users", formData);
-      // console.log("Form submitted successfully:", response.data);
-      console.log("Form submitted successfully");
-    } catch (error) {
-      console.error("Failed to submit form:", error);
-    }
+  const onFinish: FormProps<RegisterSchema>["onFinish"] = (values) => {
+    // startTransition(async () => {
+    const result = onRegisterSubmit(values);
+    console.log("from Onfinish", result);
+    // });
   };
+
+  async function onRegisterSubmit(values: RegisterSchema) {
+    // setError("");
+    // setSuccess("");
+    const result = await registerAction(values);
+    console.log("from onRigister", result);
+
+    if (result.status === "error") {
+      setError(result.message);
+      console.log("error:", error);
+    } else if (result.status === "success") {
+      setSuccess(result.message);
+      // router.push("/auth/login");
+      console.log("success", success);
+    }
+  }
+
+  useEffect(() => {
+    if (success) {
+      router.push("/auth/login");
+    }
+  }, [success]);
+
+  const [form] = Form.useForm();
 
   return (
     <div className={styleLogin.appBg}>
       <Card className={styleLogin.card}>
         <Form
-          // onSubmitCapture={handleSubmit(submit)}
-          action={formAction}
+          // onSubmitCapture={handleSubmit(onRegisterSubmit)}
+          // action={formAction}
           className={styleLogin.loginForm}
           name="basic"
           initialValues={{ remember: true }}
+          form={form}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
@@ -68,7 +80,7 @@ function Register() {
           </Typography.Title>
           <Form.Item<FieldType>
             label="نام "
-            name="username"
+            name="name"
             rules={[{ required: true, message: "لطفا نام کاربری را انتخاب کنید" }]}
           >
             <Input name="name" placeholder="نام " />
@@ -88,6 +100,8 @@ function Register() {
           >
             <Input.Password name="password" placeholder="گذرواژه" />
           </Form.Item>
+          <FormError message={error} />
+          <FormSuccess message={success} />
 
           <Form.Item>
             <Button style={{ fontFamily: "YekanBakh-Bold" }} type="primary" htmlType="submit" block>
