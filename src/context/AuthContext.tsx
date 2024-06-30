@@ -46,12 +46,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const checkUserLoggedIn = async () => {
       const result = await meAction();
-      console.log("result from context", result);
-      // if (result?.userInfo) {
-      //   loginContext(result.userInfo);
-      // } else {
-      //   loginContext(undefined);
-      // }
+      console.log("result from context", result["userInfo"]);
+
+      if (result["userInfo"]) {
+        loginContext(result["userInfo"]);
+      } else {
+        loginContext(undefined);
+      }
     };
     checkUserLoggedIn();
   }, []);

@@ -1,7 +1,7 @@
 /** @format */
-
+// TODO unknown
 export interface userInfoType {
-  [key: string]: string;
+  [key: string]: unknown;
 }
 export interface IResponce {
   resultNotify?: {
@@ -9,4 +9,5 @@ export interface IResponce {
     message: string;
   };
   userInfo?: userInfoType;
+  //   userInfo?: Record<string, unknown>;
 }

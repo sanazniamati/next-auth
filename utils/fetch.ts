@@ -14,9 +14,11 @@ const getFetch = async (url: string, headers: {} = {}) => {
     });
 
     const data = await response.json();
+    console.log("from getFetch", data);
     return data;
   } catch (error) {
     throw new Error(`Fail to Fetch , error is : ${error}`);
+    //error={message:"Fail to Fetch..."}
   }
 };
 
@@ -36,6 +38,7 @@ const postFetch = async (url: string, body: {} = {}, headers: {} = {}) => {
     return data;
   } catch (error) {
     throw new Error(`Fail to Fetch , error is : ${error}`);
+    //error={message:"Fail to Fetch..."}
   }
 };
 export { getFetch, postFetch };

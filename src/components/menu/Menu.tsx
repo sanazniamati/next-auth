@@ -3,11 +3,20 @@
 import Link from "next/link";
 import { Nav } from "./style";
 import { useAuthContext } from "@/context/AuthContext";
+import { logoutAction } from "@/actions/logOut";
+import { useRouter } from "next/navigation";
 
 export default function Menu() {
-  const { values } = useAuthContext();
+  const router = useRouter();
+  const { values, func } = useAuthContext();
   const { user } = values;
-  console.log(user);
+  const { logoutUser } = func;
+
+  const handleLogOut = async () => {
+    await logoutAction();
+    logoutUser();
+    router.push("/");
+  };
 
   return (
     <Nav>
@@ -28,9 +37,13 @@ export default function Menu() {
           </Link>
         </li>
       </ul>
+      {/* //TODO */}
       {user && Object.keys(user).length > 0 ? (
         <>
           <p>{user["name"]}</p>
+          <Link className="menuLink signIn" href="#" onClick={handleLogOut}>
+            خروج
+          </Link>
         </>
       ) : (
         <>
