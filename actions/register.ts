@@ -6,12 +6,6 @@ import { postFetch } from "../utils/fetch";
 import { getUserByEmail } from "@/data/user";
 
 export async function registerAction(values: RegisterSchema) {
-  //
-  // const validatedFields = registerSchema.safeParse(values);
-  // if (!validatedFields.success) {
-  //   return { error: "Invalid fields!" };
-  // }
-
   const name = values.name;
   const email = values.email;
   const password = values.password;

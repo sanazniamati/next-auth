@@ -17,6 +17,7 @@ export async function loginAction(values: LoginSchema) {
       message: res.errors[0].message,
     };
   }
+
   cookies().set({
     name: "token",
     value: res.token,

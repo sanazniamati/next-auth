@@ -32,8 +32,8 @@ function Register() {
 
   const onFinish: FormProps<RegisterSchema>["onFinish"] = (values) => {
     // startTransition(async () => {
-    const result = onRegisterSubmit(values);
-    console.log("from Onfinish", result);
+    onRegisterSubmit(values);
+
     // });
   };
 
@@ -48,7 +48,7 @@ function Register() {
       console.log("error:", error);
     } else if (result.status === "success") {
       setSuccess(result.message);
-      // router.push("/auth/login");
+
       console.log("success", success);
     }
   }

@@ -11,6 +11,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginAction } from "../../../../actions/login";
 import { LoginSchema, loginSchema } from "@/schemas";
 import { useRouter } from "next/navigation";
+import { FormError } from "@/components/form-error";
+import { FormSuccess } from "@/components/form-success";
+import { useAuthContext } from "@/context/AuthContext";
 
 type FieldType = {
   email?: string;
@@ -26,6 +29,8 @@ function Login() {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const router = useRouter();
+  const { func } = useAuthContext();
+  const { loginUser } = func;
 
   const onFinish: FormProps<LoginSchema>["onFinish"] = (values) => {
     onLoginSubmit(values);
@@ -43,13 +48,15 @@ function Login() {
       console.log("error:", error);
     } else if (result.notify?.status === "success") {
       setSuccess(result.notify.message);
-      // router.push("/auth/login");
+      // TODO lohinUser should go to useEffect
+      loginUser(result.userInfo);
       console.log("success", success);
     }
   }
 
   useEffect(() => {
     if (success) {
+      //TODO  loginUser(result.userInfo);
       router.push("/");
     }
   }, [success]);
@@ -76,7 +83,7 @@ function Login() {
             name="email"
             rules={[{ required: true, message: "لطفا نام کاربری را انتخاب کنید" }]}
           >
-            <Input name="email" placeholder=" ایمیل" />
+            <Input name="UserName" placeholder=" ایمیل" />
           </Form.Item>
 
           <Form.Item<LoginSchema>
@@ -84,12 +91,14 @@ function Login() {
             name="password"
             rules={[{ required: true, message: "لطفا پسورد را وارد کنید" }]}
           >
-            <Input.Password name="password" placeholder="گذرواژه" />
+            <Input.Password name="Password" placeholder="گذرواژه" />
           </Form.Item>
 
           {/* <Form.Item<FieldType> name="remember" valuePropName="checked" wrapperCol={{ offset: 0, span: 24 }}>
             <Checkbox>مرا بخاطر بسپار</Checkbox>
           </Form.Item> */}
+          <FormError message={error} />
+          <FormSuccess message={success} />
 
           <Form.Item>
             <Button style={{ fontFamily: "YekanBakh-Bold" }} type="primary" htmlType="submit" block>

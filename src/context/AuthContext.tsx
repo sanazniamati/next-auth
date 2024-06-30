@@ -1,6 +1,7 @@
 /** @format */
-
-import { createContext, useContext, useState } from "react";
+"use client";
+import { createContext, useContext, useEffect, useState } from "react";
+import { meAction } from "../../actions/me";
 interface IContext {
   values: {
     user: {} | undefined;
@@ -28,6 +29,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logoutContext = () => {
     setUser({});
   };
+
+  useEffect(() => {
+    const checkUserLoggedIn = async () => {
+      const data = await meAction();
+      console.log(data);
+    };
+    checkUserLoggedIn();
+  }, []);
   const contextValuee: IContext = {
     values: {
       user: user,

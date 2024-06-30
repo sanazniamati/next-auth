@@ -17,7 +17,6 @@ const getFetch = async (url: string, headers: {} = {}) => {
     return data;
   } catch (error) {
     throw new Error(`Fail to Fetch , error is : ${error}`);
-    //error={message:"Fail to Fetch..."}
   }
 };
 
