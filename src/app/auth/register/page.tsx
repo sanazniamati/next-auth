@@ -8,7 +8,7 @@ import Link from "next/link";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 
-import { registerAction } from "../../../../actions/register";
+import { registerAction } from "../../../actions/register";
 import { RegisterSchema, registerSchema } from "../../../schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState, useTransition } from "react";
@@ -43,11 +43,11 @@ function Register() {
     const result = await registerAction(values);
     console.log("from onRigister", result);
 
-    if (result.status === "error") {
-      setError(result.message);
+    if (result.resultNotify?.status === "error") {
+      setError(result.resultNotify.message);
       console.log("error:", error);
-    } else if (result.status === "success") {
-      setSuccess(result.message);
+    } else if (result.resultNotify?.status === "success") {
+      setSuccess(result.resultNotify.message);
 
       console.log("success", success);
     }

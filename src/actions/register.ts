@@ -2,8 +2,9 @@
 
 "use server";
 import { RegisterSchema, registerSchema } from "@/schemas";
-import { postFetch } from "../utils/fetch";
+import { postFetch } from "../../utils/fetch";
 import { getUserByEmail } from "@/data/user";
+import { IResponce } from "@/types/types";
 
 export async function registerAction(values: RegisterSchema) {
   const name = values.name;
@@ -20,13 +21,20 @@ export async function registerAction(values: RegisterSchema) {
   // console.log("formData : ", res.message);
 
   if (res.errors) {
-    return {
-      status: "error",
-      message: res.errors[0].data[0].message,
+    const resultMessage: IResponce = {
+      resultNotify: {
+        status: "error",
+        message: res.errors[0].message,
+      },
     };
+    return resultMessage;
   }
-  return {
-    status: "success",
-    message: "ثبت نام با موفقیت انجام شد",
+
+  const resultMessage: IResponce = {
+    resultNotify: {
+      status: "success",
+      message: "ثبت نام با موفقیت انجام شد",
+    },
   };
+  return resultMessage;
 }

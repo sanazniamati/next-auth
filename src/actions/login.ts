@@ -4,7 +4,8 @@
 import { cookies } from "next/headers";
 
 import { LoginSchema, loginSchema } from "@/schemas";
-import { postFetch } from "../utils/fetch";
+import { postFetch } from "../../utils/fetch";
+import { IResponce } from "@/types/types";
 
 export async function loginAction(values: LoginSchema) {
   const email = values.email;
@@ -12,10 +13,13 @@ export async function loginAction(values: LoginSchema) {
   const res = await postFetch("/users/login", { email, password });
 
   if (res.errors) {
-    return {
-      status: "error",
-      message: res.errors[0].message,
+    const resultMessage: IResponce = {
+      resultNotify: {
+        status: "error",
+        message: res.errors[0].message,
+      },
     };
+    return resultMessage;
   }
 
   cookies().set({
@@ -23,11 +27,13 @@ export async function loginAction(values: LoginSchema) {
     value: res.token,
     httpOnly: true,
   });
-  return {
-    notify: {
+
+  const resultMessage: IResponce = {
+    resultNotify: {
       status: "success",
       message: "با موفقیت وارد شدید",
     },
     userInfo: res.user,
   };
+  return resultMessage;
 }

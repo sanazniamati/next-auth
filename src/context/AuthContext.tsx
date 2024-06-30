@@ -1,19 +1,21 @@
 /** @format */
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import { meAction } from "../../actions/me";
+import { meAction } from "../actions/me";
+import { userInfoType } from "@/types/types";
+
 interface IContext {
   values: {
-    user: {} | undefined;
+    user: userInfoType | undefined;
   };
   func: {
-    loginUser: (user: {} | undefined) => void;
+    loginUser: (user: userInfoType | undefined) => void;
     logoutUser: () => void;
   };
 }
 const AuthContext = createContext<IContext>({
   values: {
-    user: {},
+    user: undefined,
   },
   func: {
     loginUser: () => {},
@@ -22,21 +24,15 @@ const AuthContext = createContext<IContext>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<{} | undefined>();
-  const loginContext = (user: {} | undefined) => {
+  const [user, setUser] = useState<userInfoType>();
+
+  const loginContext = (user: userInfoType | undefined) => {
     setUser(user);
   };
   const logoutContext = () => {
-    setUser({});
+    setUser(undefined);
   };
 
-  useEffect(() => {
-    const checkUserLoggedIn = async () => {
-      const data = await meAction();
-      console.log(data);
-    };
-    checkUserLoggedIn();
-  }, []);
   const contextValuee: IContext = {
     values: {
       user: user,
@@ -46,6 +42,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       logoutUser: logoutContext,
     },
   };
+
+  useEffect(() => {
+    const checkUserLoggedIn = async () => {
+      const result = await meAction();
+      console.log("result from context", result);
+      // if (result?.userInfo) {
+      //   loginContext(result.userInfo);
+      // } else {
+      //   loginContext(undefined);
+      // }
+    };
+    checkUserLoggedIn();
+  }, []);
+
   return <AuthContext.Provider value={contextValuee}>{children}</AuthContext.Provider>;
 };
 

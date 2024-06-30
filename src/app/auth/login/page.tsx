@@ -8,7 +8,7 @@ import { Row, Col } from "antd";
 import styleLogin from "./style.module.css";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginAction } from "../../../../actions/login";
+import { loginAction } from "../../../actions/login";
 import { LoginSchema, loginSchema } from "@/schemas";
 import { useRouter } from "next/navigation";
 import { FormError } from "@/components/form-error";
@@ -43,11 +43,11 @@ function Login() {
     const result = await loginAction(values);
     console.log("from onLogin", result);
 
-    if (result.status === "error") {
-      setError(result.message);
+    if (result.resultNotify?.status === "error") {
+      setError(result.resultNotify.message);
       console.log("error:", error);
-    } else if (result.notify?.status === "success") {
-      setSuccess(result.notify.message);
+    } else if (result.resultNotify?.status === "success") {
+      setSuccess(result.resultNotify.message);
       // TODO lohinUser should go to useEffect
       loginUser(result.userInfo);
       console.log("success", success);
