@@ -1,67 +1,69 @@
 /** @format */
 "use client";
 
+// library
 import React, { useEffect, useState } from "react";
-import type { FormProps } from "antd";
-import { Button, Card, Checkbox, Form, Input, Typography } from "antd";
-import { Row, Col } from "antd";
-import styleLogin from "./style.module.css";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { loginAction } from "../../../actions/login";
-import { LoginSchema, loginSchema } from "@/schemas";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import type { FormProps } from "antd";
+import { Button, Card, Form, Input, Typography } from "antd";
+
+// style
+import styleLogin from "./style.module.css";
+
+// action
+import { loginAction } from "../../../actions/login";
+
+// components
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
+
+// context
 import { useAuthContext } from "@/context/AuthContext";
 
-type FieldType = {
-  email?: string;
-  password?: string;
-  // remember?: string;
-};
+// types &interface
+import { ILoginWithEmail, IResponce } from "@/services/user/models";
 
-const onFinishFailed: FormProps<LoginSchema>["onFinishFailed"] = (errorInfo) => {
+const onFinishFailed: FormProps<ILoginWithEmail>["onFinishFailed"] = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
 
 function Login() {
+  const [form] = Form.useForm();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  const [loading, setLoading] = useState(false);
+  const [resultMessage, setResultMessage] = useState<IResponce>();
   const router = useRouter();
   const { func } = useAuthContext();
   const { loginUser } = func;
 
-  const onFinish: FormProps<LoginSchema>["onFinish"] = (values) => {
-    onLoginSubmit(values);
-    console.log("Success:", values);
-  };
-
-  async function onLoginSubmit(values: LoginSchema) {
-    // setError("");
-    // setSuccess("");
-    const result = await loginAction(values);
-    console.log("from onLogin", result);
-
-    if (result.resultNotify?.status === "error") {
-      setError(result.resultNotify.message);
-      console.log("error:", error);
-    } else if (result.resultNotify?.status === "success") {
-      setSuccess(result.resultNotify.message);
-      // TODO lohinUser should go to useEffect
-      loginUser(result.userInfo);
-      console.log("success", success);
+  async function onLoginSubmit(values: ILoginWithEmail) {
+    try {
+      setLoading(true);
+      setError("");
+      setSuccess("");
+      const result = await loginAction(values);
+      setResultMessage(result.resultMessage);
+      if (result.resultMessage.resultNotify?.status === "error") {
+        setError(result.resultMessage.resultNotify.message);
+      } else if (result.resultMessage.resultNotify?.status === "success") {
+        setSuccess(result.resultMessage.resultNotify.message);
+        loginUser(result.userInfo);
+        router.push("/");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
-  useEffect(() => {
-    if (success) {
-      //TODO  loginUser(result.userInfo);
-      router.push("/");
-    }
-  }, [success]);
-
-  const [form] = Form.useForm();
+  // useEffect(() => {
+  //   if (success) {
+  //     router.push("/");
+  //   }
+  // }, [success]);
 
   return (
     <div className={styleLogin.appBg}>
@@ -71,14 +73,14 @@ function Login() {
           className={styleLogin.loginForm}
           name="basic"
           initialValues={{ remember: true }}
-          onFinish={onFinish}
+          onFinish={onLoginSubmit}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Typography.Title level={3} style={{ textAlign: "center", fontFamily: "YekanBakh-Bold" }}>
             فرم ورود
           </Typography.Title>
-          <Form.Item<LoginSchema>
+          <Form.Item<ILoginWithEmail>
             label=" ایمیل"
             name="email"
             rules={[{ required: true, message: "لطفا نام کاربری را انتخاب کنید" }]}
@@ -86,7 +88,7 @@ function Login() {
             <Input name="UserName" placeholder=" ایمیل" />
           </Form.Item>
 
-          <Form.Item<LoginSchema>
+          <Form.Item<ILoginWithEmail>
             label="گذرواژه"
             name="password"
             rules={[{ required: true, message: "لطفا پسورد را وارد کنید" }]}
@@ -94,18 +96,16 @@ function Login() {
             <Input.Password name="Password" placeholder="گذرواژه" />
           </Form.Item>
 
-          {/* <Form.Item<FieldType> name="remember" valuePropName="checked" wrapperCol={{ offset: 0, span: 24 }}>
-            <Checkbox>مرا بخاطر بسپار</Checkbox>
-          </Form.Item> */}
           <FormError message={error} />
           <FormSuccess message={success} />
 
           <Form.Item>
-            <Button style={{ fontFamily: "YekanBakh-Bold" }} type="primary" htmlType="submit" block>
+            <Button loading={loading} style={{ fontFamily: "YekanBakh-Bold" }} type="primary" htmlType="submit" block>
               ورود
             </Button>
           </Form.Item>
         </Form>
+        <Link href={"/auth/login/loginOtp"}>ورود با شماره تلفن</Link>
       </Card>
     </div>
   );

@@ -1,55 +1,53 @@
 /** @format */
 "use client";
 
-import type { FormProps } from "antd";
-import { Button, Card, Checkbox, Form, Input, Typography, FormInstance, FormRule } from "antd";
-import styleLogin from "./style.module.css";
+// library
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import type { FormProps } from "antd";
+import { Button, Card, Form, Input, Typography } from "antd";
+
+// style
+import styleLogin from "./style.module.css";
+
+// action
+import { registerAction } from "../../../actions/register";
+
+// types and interface
+import { IRegister } from "@/services/user/models";
+
+// components
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 
-import { registerAction } from "../../../actions/register";
-import { RegisterSchema, registerSchema } from "../../../schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-
-type FieldType = {
-  name?: string;
-  email?: string;
-  password?: string;
-};
-
-const onFinishFailed: FormProps<RegisterSchema>["onFinishFailed"] = (errorInfo) => {
+const onFinishFailed: FormProps<IRegister>["onFinishFailed"] = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
 
 function Register() {
+  const [form] = Form.useForm();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
-  // const [pending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const onFinish: FormProps<RegisterSchema>["onFinish"] = (values) => {
-    // startTransition(async () => {
-    onRegisterSubmit(values);
+  async function onRegisterSubmit(values: IRegister) {
+    try {
+      setLoading(true);
+      setError("");
+      setSuccess("");
+      const result = await registerAction(values);
 
-    // });
-  };
-
-  async function onRegisterSubmit(values: RegisterSchema) {
-    // setError("");
-    // setSuccess("");
-    const result = await registerAction(values);
-    console.log("from onRigister", result);
-
-    if (result.resultNotify?.status === "error") {
-      setError(result.resultNotify.message);
-      console.log("error:", error);
-    } else if (result.resultNotify?.status === "success") {
-      setSuccess(result.resultNotify.message);
-
-      console.log("success", success);
+      if (result.resultNotify?.status === "error") {
+        setError(result.resultNotify.message);
+      } else if (result.resultNotify?.status === "success") {
+        setSuccess(result.resultNotify.message);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -59,58 +57,61 @@ function Register() {
     }
   }, [success]);
 
-  const [form] = Form.useForm();
-
   return (
     <div className={styleLogin.appBg}>
       <Card className={styleLogin.card}>
         <Form
-          // onSubmitCapture={handleSubmit(onRegisterSubmit)}
-          // action={formAction}
           className={styleLogin.loginForm}
           name="basic"
           initialValues={{ remember: true }}
           form={form}
-          onFinish={onFinish}
+          onFinish={onRegisterSubmit}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Typography.Title level={3} style={{ textAlign: "center", fontFamily: "YekanBakh-Bold" }}>
             فرم ثبت نام
           </Typography.Title>
-          <Form.Item<FieldType>
+          <Form.Item<IRegister>
             label="نام "
             name="name"
             rules={[{ required: true, message: "لطفا نام کاربری را انتخاب کنید" }]}
           >
             <Input name="name" placeholder="نام " />
           </Form.Item>
-          <Form.Item<FieldType>
+          <Form.Item<IRegister>
             label="ایمیل"
             name="email"
             rules={[{ required: true, message: "لطفا نام کاربری را انتخاب کنید" }]}
           >
             <Input name="email" placeholder="ایمیل " />
           </Form.Item>
+          <Form.Item<IRegister>
+            label="شماره تلفن"
+            name="phoneNumber"
+            rules={[{ required: true, message: "لطفا شماره تلفن را انتخاب کنید" }]}
+          >
+            <Input name="phoneNumber" placeholder="09384997337 " />
+          </Form.Item>
 
-          <Form.Item<FieldType>
+          <Form.Item<IRegister>
             label="گذرواژه"
             name="password"
             rules={[{ required: true, message: "لطفا پسورد را وارد کنید" }]}
           >
             <Input.Password name="password" placeholder="گذرواژه" />
           </Form.Item>
-          <FormError message={error} />
-          <FormSuccess message={success} />
+          {error && <FormError message={error} />}
+
+          {success && <FormSuccess message={success} />}
 
           <Form.Item>
-            <Button style={{ fontFamily: "YekanBakh-Bold" }} type="primary" htmlType="submit" block>
+            <Button loading={loading} style={{ fontFamily: "YekanBakh-Bold" }} type="primary" htmlType="submit" block>
               ثبت نام
             </Button>
           </Form.Item>
-          <Form.Item<FieldType>>
+          <Form.Item<IRegister>>
             <Link href={"/auth/login"}>قبلا ثبت نام کرده ام</Link>
-            {/* <Checkbox>مرا بخاطر بسپار</Checkbox> */}
           </Form.Item>
         </Form>
       </Card>

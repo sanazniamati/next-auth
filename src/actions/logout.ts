@@ -2,15 +2,19 @@
 "use server";
 import { cookies } from "next/headers";
 import { postFetch } from "../../utils/fetch";
-import { IResponce } from "@/types/types";
+import { IResponce } from "@/services/user/models";
+import { UsersUrls } from "@/services/user/url";
 
 export async function logoutAction() {
   const token = cookies().get("token");
 
-  const res = await postFetch("/users/logout", { Authorization: `Bearer ${token?.value}` });
-  console.log("res from logoutAction", res);
+  if (!token) {
+    return;
+  }
 
-  if (res.message) {
+  const res = await postFetch(UsersUrls.logout, { Authorization: `Bearer ${token?.value}` });
+  if (res.status === 200) {
+    // if (res.message) {
     const reportMessage: IResponce = {
       resultNotify: {
         status: "success",

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Nav } from "./style";
 import { useAuthContext } from "@/context/AuthContext";
-import { logoutAction } from "@/actions/logOut";
+import { logoutAction } from "@/actions/logout";
 import { useRouter } from "next/navigation";
 
 export default function Menu() {
@@ -13,7 +13,7 @@ export default function Menu() {
   const { logoutUser } = func;
 
   const handleLogOut = async () => {
-    await logoutAction();
+    // await logoutAction();
     logoutUser();
     router.push("/");
   };
@@ -38,9 +38,9 @@ export default function Menu() {
         </li>
       </ul>
       {/* //TODO */}
-      {user && Object.keys(user).length > 0 ? (
+      {user ? (
         <>
-          <p>{user["name"]}</p>
+          <p style={{ background: "red", padding: 20 }}>{user.name}</p>
           <Link className="menuLink signIn" href="#" onClick={handleLogOut}>
             خروج
           </Link>
