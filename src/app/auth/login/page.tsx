@@ -44,10 +44,10 @@ function Login() {
       setError("");
       setSuccess("");
       const result = await loginAction(values);
-      setResultMessage(result.resultMessage);
-      if (result.resultMessage.resultNotify?.status === "error") {
+      setResultMessage(result?.resultMessage);
+      if (result?.resultMessage.resultNotify?.status === "error") {
         setError(result.resultMessage.resultNotify.message);
-      } else if (result.resultMessage.resultNotify?.status === "success") {
+      } else if (result?.resultMessage.resultNotify?.status === "success") {
         setSuccess(result.resultMessage.resultNotify.message);
         loginUser(result.userInfo);
         router.push("/");
